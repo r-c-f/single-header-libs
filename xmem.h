@@ -1,6 +1,6 @@
 /* xmem -- memory operations that can only fail catastrophically
  *
- * Version 1.1
+ * Version 1.2
  *
  * Copyright 2021 Ryan Farley <ryan.farley@gmx.com>
  *
@@ -94,10 +94,12 @@ __attribute__((unused))
 static void strfreev(char **strv)
 {
 	size_t i;
-	for (i = 0; strv[i]; ++i) {
-		free(strv[i]);
+	if (strv) {
+		for (i = 0; strv[i]; ++i) {
+			free(strv[i]);
+		}
+		free(strv);
 	}
-	free(strv);
 }
 
 #endif
