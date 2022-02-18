@@ -36,7 +36,7 @@
 static void vmvwprintw(WINDOW *w, int y, int x,  const char *fmt, va_list args)
 {
 	wmove(w, y, x);
-       	vwprintw(w, fmt, args);
+       	vw_printw(w, fmt, args);
 }
 
 /* an optional status line window */
