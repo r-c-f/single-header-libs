@@ -1,6 +1,6 @@
 /* cursutil -- useful routines for working with curses
  *
- * Version 1.2
+ * Version 1.6
  *
  * Copyright 2022 Ryan Farley <ryan.farley@gmx.com>
  *
@@ -18,6 +18,7 @@
 */
 #pragma once
 #include <curses.h>
+#include <term.h>
 #include <stdarg.h>
 
 /* Clear a border created by box() from a window */
@@ -31,12 +32,13 @@
 
 /* Case label for all backspace possibilities */
 #define CASE_ALL_BACKSPACE case KEY_BACKSPACE: case CTRL_('h'): case 127
-
-/* move and vwprintw */
-static void vmvwprintw(WINDOW *w, int y, int x,  const char *fmt, va_list args)
+/* and enter/return */
+#define CASE_ALL_RETURN case KEY_ENTER: case '\n': case '\r'
+/* move and vw_printw */
+static void vw_mvprintw(WINDOW *w, int y, int x,  const char *fmt, va_list args)
 {
 	wmove(w, y, x);
-       	vwprintw(w, fmt, args);
+       	vw_printw(w, fmt, args);
 }
 
 /* an optional status line window */
@@ -58,7 +60,10 @@ static int cu_stat_init(enum cu_stat_pos pos)
 }
 
 /* pretty self-explanatory status line macros/functions */
-#define cu_stat_clear() wclear(cu_stat_win)
+#define cu_stat_clear() do { \
+	wmove(cu_stat_win, 0, 0); \
+	wclrtoeol(cu_stat_win); \
+} while (0)
 #define cu_stat_move(y, x) wmove(cu_stat_win, y, x)
 /* printw for status line, but set attributes */
 static void cu_stat_aprintw(int attr, char *fmt, ...)
@@ -72,7 +77,7 @@ static void cu_stat_aprintw(int attr, char *fmt, ...)
 		wattrset(cu_stat_win, attr);
 	}
 	va_start(ap, fmt);
-	vwprintw(cu_stat_win, fmt, ap);
+	vw_printw(cu_stat_win, fmt, ap);
 	va_end(ap);
 
 	if (attr != -1) {
@@ -88,8 +93,34 @@ static void cu_stat_setw(char *fmt, ...)
 
 	cu_stat_clear();
 	va_start(ap, fmt);
-	vmvwprintw(cu_stat_win, 0, 0, fmt, ap);
+	vw_mvprintw(cu_stat_win, 0, 0, fmt, ap);
 	va_end(ap);
 
 	wnoutrefresh(cu_stat_win);
+}
+
+/* Set window title */
+static void cu_title_setw(char *str, ...)
+{
+	va_list ap;
+	char *tsl, *fsl, *buf;
+	va_start(ap, str);
+	#ifdef PDCURSES
+	xvasprintf(&buf, str, ap);
+	PDC_set_title(buf);
+	free(buf);
+	#else
+	if (tigetflag("hs")) {
+		tsl = tigetstr("tsl");
+		fsl = tigetstr("fsl");
+		if (tsl && tsl != (char*)-1) {
+			putp(tsl);
+		}
+		vprintf(str, ap);
+		if (fsl && fsl != (char*)-1) {
+			putp(fsl);
+		}
+	}
+	#endif
+	va_end(ap);
 }
