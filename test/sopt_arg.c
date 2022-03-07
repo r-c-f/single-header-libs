@@ -39,6 +39,10 @@ int main(int argc, char **argv)
 			case 'f':
 				printf("Got float argument: %f\n", soptarg.f);
 				break;
+			default:
+				printf("Got unknown argument\n");
+				sopt_usage_s();
+				return 1;
 		}
 	}
 	return 0;
