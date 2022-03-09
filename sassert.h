@@ -24,26 +24,38 @@
  * custom names by only defining it on lesser platforms where needed*/
 #if !defined(static_assert)
 
-/* GCC -- _Static_assert is present in >=4.6 */
-#if defined(__GNUC__) && (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)
-#define static_assert(exp, str) _Static_assert(exp, str)
-
+#if defined(__GNUC__)
+	/* see if we can get away with _Static_assert, which is present for 
+	 * all C standards in gcc >= 4.6 */
+	#if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)
+		#define static_assert(exp, str) _Static_assert(exp, str)
+	/* this is a filthy hack to trigger an error in older versions 
+	 * by dividing by zero in an enum definition */ 
+	#else
+		#warning "Static assertion failures are not supported; look for divide-by-zero or non-constant enum definition errors instead"
+		#define static_assert(exp, str) {\
+			enum {\
+				static_assert_value = 1/(!!(expr))\
+			}; \
+		}
+	#endif
 /* clang -- has a nice feature to test for it */
 #elif defined(__clang__) && __has_feature(c_static_assert)
-#define static_assert(exp, str) _Static_assert(exp, str)
+	#define static_assert(exp, str) _Static_assert(exp, str)
 
 /* Microsoft -- anything NT *should* have this
  *
  * Note that it does not support messages.
 */
 #elif defined(_MSC_VER)
-#include <winnt.h>
-#define static_assert(exp, str) C_ASSERT(exp)
-
+	#include <winnt.h>
+	#define static_assert(exp, str) C_ASSERT(exp)
 #else
-/* treat this as an error condition for now */
-#if !defined(NDEBUG)
-#error "Static assertions not available"
-#endif /* !defined(NDEBUG) */
+	/* treat this as an error condition for now */
+	#if !defined(NDEBUG)
+		#error "Static assertions not available"
+	#endif
+#endif
+
 #endif /* !defined(static_assert) */
 
