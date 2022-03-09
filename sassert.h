@@ -25,19 +25,16 @@
 #if !defined(static_assert)
 
 #if defined(__GNUC__)
-	/* see if we can get away with _Static_assert, which is present for 
+	/* see if we can get away with _Static_assert, which is present for
 	 * all C standards in gcc >= 4.6 */
 	#if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)
 		#define static_assert(exp, str) _Static_assert(exp, str)
-	/* this is a filthy hack to trigger an error in older versions 
-	 * by dividing by zero in an enum definition */ 
+	/* this is a filthy hack to trigger an error even if we can't actually
+	 * have native support */
 	#else
-		#warning "Static assertion failures are not supported; look for divide-by-zero or non-constant enum definition errors instead"
-		#define static_assert(exp, str) {\
-			enum {\
-				static_assert_value = 1/(!!(expr))\
-			}; \
-		}
+		#warning "No native static assertion support; see errors about array size for failures"
+		#define static_assert(exp, str) \
+			extern char (*static_assert(void)) [sizeof(char[1 - 2*!(exp)])]
 	#endif
 /* clang -- has a nice feature to test for it */
 #elif defined(__clang__) && __has_feature(c_static_assert)
