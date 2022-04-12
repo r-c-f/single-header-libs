@@ -1,6 +1,6 @@
 /* sassert -- static assertion on as many platforms as possible
  *
- * Version 1.1
+ * Version 1.2
  *
  * Copyright 2022 Ryan Farley <ryan.farley@gmx.com>
  *
@@ -16,12 +16,12 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#pragma once
 #include <assert.h>
 
-
 /* because static_assert is guaranteed to be a macro in C11, we can avoid
- * custom names by only defining it on lesser platforms where needed*/
+ * custom names by only defining it on lesser platforms where needed
+ *
+ * also can acts our include guard */
 #if !defined(static_assert)
 
 
