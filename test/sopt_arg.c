@@ -6,8 +6,10 @@ struct sopt optspec[] = {
 	SOPT_INIT_ARGL('s', "short", SOPT_ARGTYPE_SHORT, "n", "A short argument"),
 	SOPT_INIT_ARGL('i', "int", SOPT_ARGTYPE_INT, "n", "A int argument"),
 	SOPT_INIT_ARGL('l', "long", SOPT_ARGTYPE_LONG, "n", "A long argument"),
-	SOPT_INIT_ARGL('L', "long long", SOPT_ARGTYPE_LONGLONG, "n", "A long long argument"),
+	SOPT_INIT_ARGL('L', "longlong", SOPT_ARGTYPE_LONGLONG, "n", "A long long argument"),
 	SOPT_INIT_ARGL('f', "float", SOPT_ARGTYPE_FLOAT, "n", "A float argument"),
+	SOPT_INIT_ARGL('d', "dbl", SOPT_ARGTYPE_DBL, "n", "A double argument"),
+	SOPT_INIT_ARGL('D', "longdbl", SOPT_ARGTYPE_LONGDBL, "n", "A long double argument"),
 	SOPT_INIT_END
 };
 
@@ -15,11 +17,11 @@ struct sopt optspec[] = {
 
 int main(int argc, char **argv)
 {
-	int opt;
-	union sopt_arg soptarg;
+	int opt, i, optind = 0;
+	union sopt_arg soptarg = {0};
 	
 	sopt_usage_set(optspec, argv[0], "A test of argument parsing funtionality");
-	while ((opt = sopt_getopt_s(argc, argv, optspec, NULL, NULL, &soptarg)) != -1) {
+	while ((opt = sopt_getopt_s(argc, argv, optspec, NULL, &optind, &soptarg)) != -1) {
 		switch (opt) {
 			case 'S':
 				printf("Got string argument: %s\n", soptarg.str);
@@ -39,12 +41,23 @@ int main(int argc, char **argv)
 			case 'f':
 				printf("Got float argument: %f\n", soptarg.f);
 				break;
+			case 'd':
+				printf("Got double argument: %f\n", soptarg.d);
+				break;
+			case 'D':
+				printf("Got long double argument: %Lf\n", soptarg.ld);
+				break;
 			default:
 				printf("Got unknown argument\n");
 				sopt_usage_s();
 				return 1;
 		}
 	}
+
+	for (; optind < argc; ++optind) {
+		printf("Got positional argument: %s\n", argv[optind]);
+	}
+
 	return 0;
 }
 
