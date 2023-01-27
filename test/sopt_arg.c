@@ -15,7 +15,7 @@ struct sopt optspec[] = {
 
 int main(int argc, char **argv)
 {
-	int opt, i, optind = 0;
+	int opt, optind = 0;
 	union sopt_arg soptarg = {0};
 
 	char *float_fmt, *dbl_fmt, *ldbl_fmt;
