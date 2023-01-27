@@ -1,5 +1,5 @@
 #include "../sopt.h"
-
+#include "../xmem.h"
 
 struct sopt optspec[] = {
 	SOPT_INIT_ARGL('S', "str", SOPT_ARGTYPE_STR, "str", "A string argument"),
@@ -13,13 +13,17 @@ struct sopt optspec[] = {
 	SOPT_INIT_END
 };
 
-
-
 int main(int argc, char **argv)
 {
 	int opt, i, optind = 0;
 	union sopt_arg soptarg = {0};
-	
+
+	char *float_fmt, *dbl_fmt, *ldbl_fmt;
+
+	xasprintf(&float_fmt, "Got float argument: %%%dg\n", FLT_DIG);
+	xasprintf(&dbl_fmt, "Got double argument: %%%dg\n", DBL_DIG);
+	xasprintf(&ldbl_fmt, "Got long double argument: %%%dLg\n", LDBL_DIG);
+
 	sopt_usage_set(optspec, argv[0], "A test of argument parsing funtionality");
 	while ((opt = sopt_getopt_s(argc, argv, optspec, NULL, &optind, &soptarg)) != -1) {
 		switch (opt) {
@@ -39,13 +43,13 @@ int main(int argc, char **argv)
 				printf("Got long long argument: %lld\n", soptarg.ll);
 				break;
 			case 'f':
-				printf("Got float argument: %f\n", soptarg.f);
+				printf(float_fmt, soptarg.f);
 				break;
 			case 'd':
-				printf("Got double argument: %f\n", soptarg.d);
+				printf(dbl_fmt, soptarg.d);
 				break;
 			case 'D':
-				printf("Got long double argument: %Lf\n", soptarg.ld);
+				printf(ldbl_fmt, soptarg.ld);
 				break;
 			default:
 				printf("Got unknown argument\n");
