@@ -388,21 +388,11 @@ shortopt:
 					sopt_perror(opt, "Argument is not a valid floating-point number");
 					return SOPT_INVAL;
 				}
-				if (!(arg_float >= FLT_MIN &&
-				      arg_float <= FLT_MAX)) {
-					sopt_perror(opt, "Argument out of range");
-					return SOPT_INVAL;
-				}
 				arg->f = arg_float;
 				break;
 			case SOPT_ARGTYPE_DBL:
 				if (!arg_float_valid) {
 					sopt_perror(opt, "Argument is not a valid floating-point number");
-					return SOPT_INVAL;
-				}
-				if (!(arg_float >= DBL_MIN &&
-				      arg_float <= DBL_MAX)) {
-					sopt_perror(opt, "Argument out of range");
 					return SOPT_INVAL;
 				}
 				arg->d = arg_float;
