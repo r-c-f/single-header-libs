@@ -1,6 +1,6 @@
 /* xmem -- memory operations that can only fail catastrophically
  *
- * Version 1.3
+ * Version 1.4
  *
  * Copyright 2021 Ryan Farley <ryan.farley@gmx.com>
  *
@@ -25,9 +25,13 @@
 #include <stdarg.h>
 #include <stdint.h>
 
-#ifdef __GNUC__
-__attribute__((unused))
+#if defined(__GNUC__)
+#define XMEM_UNUSED __attribute__((unused))
+#else
+#define XMEM_UNUSED
 #endif
+
+XMEM_UNUSED
 static void *xmalloc(size_t len)
 {
 	void *ret;
@@ -35,9 +39,8 @@ static void *xmalloc(size_t len)
 		abort();
 	return ret;
 }
-#ifdef __GNUC__
-__attribute__((unused))
-#endif
+
+XMEM_UNUSED
 static void *xcalloc(size_t nmemb, size_t size)
 {
 	void *ret;
@@ -45,18 +48,16 @@ static void *xcalloc(size_t nmemb, size_t size)
 		abort();
 	return ret;
 }
-#ifdef __GNUC__
-__attribute__((unused))
-#endif
+
+XMEM_UNUSED
 static void *xrealloc(void *ptr, size_t len)
 {
 	if (!(ptr = realloc(ptr, len)))
 		abort();
 	return ptr;
 }
-#ifdef __GNUC__
-__attribute__((unused))
-#endif
+
+XMEM_UNUSED
 static void *xreallocarray(void *ptr, size_t nmemb, size_t size)
 {
 	if (size && nmemb > SIZE_MAX / size) {
@@ -64,29 +65,40 @@ static void *xreallocarray(void *ptr, size_t nmemb, size_t size)
 	}
 	return xrealloc(ptr, nmemb * size);
 }
-#ifdef __GNUC__
-__attribute__((unused))
-#endif
+
+XMEM_UNUSED
 static char *xstrdup(const char *str)
 {
 	char *ret;
+	size_t len;
+
 	if (!str)
 		return NULL;
-	if (!(ret = strdup(str)))
-		abort();
-	return ret;
+
+	len = strlen(str) + 1;
+	ret = xmalloc(len);
+	return memcpy(ret, str, len);
 }
-#ifdef __GNUC__
-__attribute__((unused))
-#endif
+
+XMEM_UNUSED
 static void xvasprintf(char **strp, const char *fmt, va_list ap)
 {
-	if (vasprintf(strp, fmt, ap) == -1)
+	char testbuf[2];
+	va_list testap;
+	int size;
+
+	va_copy(testap, ap);
+	if ((size = vsnprintf(testbuf, sizeof(testbuf), fmt, testap)) == -1)
+		abort();
+	va_end(testap);
+
+	*strp = xmalloc(size + 1);
+
+	if (vsnprintf(*strp, size + 1, fmt, ap) == -1)
 		abort();
 }
-#ifdef __GNUC__
-__attribute__((unused))
-#endif
+
+XMEM_UNUSED
 static void xasprintf(char **strp, const char *fmt, ...)
 {
 	va_list ap;
@@ -95,9 +107,8 @@ static void xasprintf(char **strp, const char *fmt, ...)
 	xvasprintf(strp, fmt, ap);
 	va_end(ap);
 }
-#ifdef __GNUC__
-__attribute__((unused))
-#endif
+
+XMEM_UNUSED
 static void strfreev(char **strv)
 {
 	if (strv) {
@@ -108,5 +119,7 @@ static void strfreev(char **strv)
 		free(strv);
 	}
 }
+
+#undef XMEM_UNUSED
 
 #endif
