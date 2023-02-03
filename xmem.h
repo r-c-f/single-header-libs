@@ -83,12 +83,11 @@ static char *xstrdup(const char *str)
 XMEM_UNUSED
 static void xvasprintf(char **strp, const char *fmt, va_list ap)
 {
-	char testbuf[2];
 	va_list testap;
 	int size;
 
 	va_copy(testap, ap);
-	if ((size = vsnprintf(testbuf, sizeof(testbuf), fmt, testap)) == -1)
+	if ((size = vsnprintf(NULL, 0, fmt, testap)) == -1)
 		abort();
 	va_end(testap);
 
