@@ -1,6 +1,6 @@
 /* human size function
  *
- * Version 1.0
+ * Version 1.1
  *
  * Copyright 2023 Ryan Farley <ryan.farley@gmx.com>
  *
@@ -19,6 +19,8 @@
 #ifndef HUMANSIZE_H_INC
 #define HUMANSIZE_H_INC
 #include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
 
 /* Like snprintf. base selects either decimal or binary prefixes for 10 or 2,
  * respectively. Output formatted N [PREFIX]UNIT */
@@ -69,5 +71,61 @@ static int humansize_print(char *buf, size_t size, double n, int base, char *uni
 
 	return -1;
 }
+
+/* Like sscanf. If base is 0, it will be assumed based on the full prefix. If
+ * given as 2, even decimal prefixes will be assumed to be binary.
+ *
+ * Returns:
+ * -	-1 if there is no number at all or base is invalid
+ * - 	0 if there is no prefix detected
+ * - 	1 if there is a prefix detected and the result is adjusted accordingly
+*/
+static int humansize_parse(const char *s, int base, double *res)
+{
+	char *pre = "kmgtpe";
+	char *end = NULL;
+	int i;
+	double mult;
+
+	*res = strtod(s, &end);
+	if (end == s) {
+		return -1;
+	}
+
+	/* trim off any whitespace */
+	for (; *end && isblank(*end); ++end);
+
+	for (i = 0; pre[i]; ++i) {
+		if (tolower(*end) == pre[i]) {
+			if (!base) {
+				if (*(end + 1) == 'i') {
+					base = 2;
+				} else {
+					base = 10;
+				}
+			}
+			break;
+		}
+	}
+	if (!pre[i]) {
+		return 0;
+	}
+
+	if (base == 2) {
+		mult = 1024;
+	} else if (base == 10) {
+		mult = 1000;
+	} else {
+		return -1;
+	}
+
+	for (; i > -1; --i) {
+		*res *= mult;
+	}
+
+	return 1;
+}
+
+
 
 #endif
