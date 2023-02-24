@@ -36,6 +36,8 @@ static int humansize_print(char *buf, size_t size, double n, int base, char *uni
                 "T",
                 "P",
                 "E",
+		"Z",
+		"Y",
                 NULL
         };
         char *bin_pre[] = {
@@ -46,6 +48,8 @@ static int humansize_print(char *buf, size_t size, double n, int base, char *uni
                 "Ti",
                 "Pi",
                 "Ei",
+		"Zi",
+		"Yi",
                 NULL
         };
 
@@ -82,7 +86,7 @@ static int humansize_print(char *buf, size_t size, double n, int base, char *uni
 */
 static int humansize_parse(const char *s, int base, double *res)
 {
-	char *pre = "kmgtpe";
+	char *pre = "kmgtpezy";
 	char *end = NULL;
 	int i;
 	double mult;
