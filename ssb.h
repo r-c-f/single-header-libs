@@ -1,6 +1,6 @@
 /* simple string builder
  *
- * Version 1.0
+ * Version 1.1
  *
  * Copyright 2023 Ryan Farley <ryan.farley@gmx.com>
  *
@@ -74,6 +74,16 @@ static void ssb_rewind(struct ssb *s)
 	if (s->buf) {
 		*(s->buf) = '\0';
 	}
+}
+
+static void ssb_free(struct ssb *s)
+{
+	s->pos = 0;
+	if (s->buf) {
+		free(s->buf);
+	}
+	s->size = 0;
+	s->buf = NULL;
 }
 
 /* x variants -- can never fail! */
