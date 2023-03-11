@@ -1,6 +1,6 @@
 /* human size function
  *
- * Version 1.1
+ * Version 1.2
  *
  * Copyright 2023 Ryan Farley <ryan.farley@gmx.com>
  *
@@ -22,42 +22,55 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-/* Like snprintf. base selects either decimal or binary prefixes for 10 or 2,
- * respectively. Output formatted N [PREFIX]UNIT */
-static int humansize_print(char *buf, size_t size, double n, int base, char *unit)
+
+/* Decimal and binary prefixes */
+static char *humansize_dec_pre[] = {
+	"",
+	"k",
+	"M",
+	"G",
+	"T",
+	"P",
+	"E",
+	"Z",
+	"Y",
+	NULL
+};
+static char *humansize_bin_pre[] = {
+	"",
+	"Ki",
+	"Mi",
+	"Gi",
+	"Ti",
+	"Pi",
+	"Ei",
+	"Zi",
+	"Yi",
+	NULL
+};
+
+/* scales a value to a fit with a prefix. base selects:
+ * 	-2: 	binary, using single-letter SI prefixes
+ * 	2: 	binary, usinng two-letter IEC prefixes
+ * 	10: 	decimal, using single-letter SI prefixes
+ *
+ * Returns:
+ * 	-1 on error (results are undefined),
+ * 	0 if the result could not be fully reduced,
+ * 	1 if the result could be fully reduced.
+*/
+static int humansize_scale(double n, int base, double *res, char **pre)
 {
 	double div;
-	char **pre;
-	char *dec_pre[] = {
-                "",
-                "k",
-                "M",
-                "G",
-                "T",
-                "P",
-                "E",
-		"Z",
-		"Y",
-                NULL
-        };
-        char *bin_pre[] = {
-                "",
-                "Ki",
-                "Mi",
-                "Gi",
-                "Ti",
-                "Pi",
-                "Ei",
-		"Zi",
-		"Yi",
-                NULL
-        };
 
 	if (base == 2) {
-		pre = bin_pre;
+		pre = humansize_bin_pre;
+		div = 1024.;
+	} else if (base == -2) {
+		pre = humansize_dec_pre;
 		div = 1024.;
 	} else if (base == 10) {
-		pre = dec_pre;
+		pre = humansize_dec_pre;
 		div = 1000.;
 	} else {
 		return -1;
@@ -69,11 +82,14 @@ static int humansize_print(char *buf, size_t size, double n, int base, char *uni
                 n /= div;
         }
 
-	if (*pre) {
-		return snprintf(buf, size, "%f %s%s", n, *pre, unit);
+	*res = n;
+
+	if (!*pre) {
+		--pre;
+		return 0;
 	}
 
-	return -1;
+	return 1;
 }
 
 /* Like sscanf. If base is 0, it will be assumed based on the full prefix. If
