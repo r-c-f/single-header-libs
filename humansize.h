@@ -94,7 +94,7 @@ static int humansize_scale(double n, int base, double *res, char **res_pre)
 
 	if (!*pre) {
 		--pre;
-		ret = 1;
+		ret = 0;
 	}
 
 	*res_pre = *pre;
