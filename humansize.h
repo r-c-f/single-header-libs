@@ -1,6 +1,6 @@
 /* human size function
  *
- * Version 1.2
+ * Version 1.3
  *
  * Copyright 2023 Ryan Farley <ryan.farley@gmx.com>
  *
@@ -55,24 +55,32 @@ static char *humansize_bin_pre[] = {
  * 	10: 	decimal, using single-letter SI prefixes
  *
  * Returns:
- * 	-1 on error (results are undefined),
+ * 	-1 if the base is invalid (result will not be reduced),
  * 	0 if the result could not be fully reduced,
  * 	1 if the result could be fully reduced.
 */
-static int humansize_scale(double n, int base, double *res, char **pre)
+static int humansize_scale(double n, int base, double *res, char **res_pre)
 {
 	double div;
+	char **pre;
+	int ret = 1;
 
-	if (base == 2) {
+	switch (base) {
+	case 2:
 		pre = humansize_bin_pre;
 		div = 1024.;
-	} else if (base == -2) {
+		break;
+	case -2:
 		pre = humansize_dec_pre;
 		div = 1024.;
-	} else if (base == 10) {
+		break;
+	case 10:
 		pre = humansize_dec_pre;
 		div = 1000.;
-	} else {
+		break;
+	default:
+		*res_pre = "";
+		*res = n;
 		return -1;
 	}
 
@@ -86,10 +94,11 @@ static int humansize_scale(double n, int base, double *res, char **pre)
 
 	if (!*pre) {
 		--pre;
-		return 0;
+		ret = 1;
 	}
 
-	return 1;
+	*res_pre = *pre;
+	return ret;
 }
 
 /* Like sscanf. If base is 0, it will be assumed based on the full prefix. If
