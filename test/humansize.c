@@ -1,24 +1,33 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "../humansize.h"
 
 
 int main(int argc, char **argv)
 {
 	int base, ret;
-	long double in, res;
-	char *pre;
+	long double n, res;
+	char *pre, *s;
 
-	if (argc != 3) {
-		fprintf(stderr, "Usage: humansize [base] [value]\n");
+	if (argc != 4) {
+		fprintf(stderr, "Usage: humansize [scale|parse] [base] [value]\n");
 		return EXIT_FAILURE;
 	}
 
-	base = strtol(argv[1], NULL, 0);
-	in = strtod(argv[2], NULL);
-	ret = humansize_scale(in, base, &res, &pre);
+	base = strtol(argv[2], NULL, 0);
+	s = argv[3];
+
+	if (!strcmp(argv[1], "scale")) {
+		n = strtod(s, NULL);
+		ret = humansize_scale(n, base, &res, &pre);
+		printf("%Lf %s\n", res, pre);
+	} else if (!strcmp(argv[1], "parse")) {
+		ret = humansize_parse(s, base, &res);
+		printf("%LF\n", res);
+	}
 	fprintf(stderr, "returned %d\n", ret);
-	printf("%Lf %s\n", res, pre);
-	return ret;
+
+	return 0;
 }
 
