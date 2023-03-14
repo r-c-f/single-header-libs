@@ -6,7 +6,7 @@
 int main(int argc, char **argv)
 {
 	int base, ret;
-	double in, res;
+	long double in, res;
 	char *pre;
 
 	if (argc != 3) {
@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 	in = strtod(argv[2], NULL);
 	ret = humansize_scale(in, base, &res, &pre);
 	fprintf(stderr, "returned %d\n", ret);
-	printf("%f %s\n", res, pre);
+	printf("%Lf %s\n", res, pre);
 	return ret;
 }
 

@@ -1,6 +1,6 @@
 /* human size function
  *
- * Version 1.3
+ * Version 1.4
  *
  * Copyright 2023 Ryan Farley <ryan.farley@gmx.com>
  *
@@ -59,9 +59,9 @@ static char *humansize_bin_pre[] = {
  * 	0 if the result could not be fully reduced,
  * 	1 if the result could be fully reduced.
 */
-static int humansize_scale(double n, int base, double *res, char **res_pre)
+static int humansize_scale(long double n, int base, long double *res, char **res_pre)
 {
-	double div;
+	long double div;
 	char **pre;
 	int ret = 1;
 
@@ -109,14 +109,14 @@ static int humansize_scale(double n, int base, double *res, char **res_pre)
  * - 	0 if there is no prefix detected
  * - 	1 if there is a prefix detected and the result is adjusted accordingly
 */
-static int humansize_parse(const char *s, int base, double *res)
+static int humansize_parse(const char *s, int base, long double *res)
 {
 	char *pre = "kmgtpezy";
 	char *end = NULL;
 	int i;
-	double mult;
+	long double mult;
 
-	*res = strtod(s, &end);
+	*res = strtold(s, &end);
 	if (end == s) {
 		return -1;
 	}
