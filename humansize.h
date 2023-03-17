@@ -28,6 +28,13 @@
 #define HUMANSIZE_EPSILON 1e-8L
 #endif
 
+/* on the chance that you despise all unicode, or want a different code point,
+ * define your mu here */
+#if !defined(HUMANSIZE_MU)
+#define HUMANSIZE_MU "µ"
+#endif
+
+
 /* Decimal and binary prefixes */
 static char *humansize_dec[] = {
 	"",
@@ -44,7 +51,7 @@ static char *humansize_dec[] = {
 static char *humansize_dec_up[] = {
 	"",
 	"m",
-	"μ",
+	HUMANSIZE_MU,
 	"n",
 	"p",
 	"f",
