@@ -1,6 +1,6 @@
 /* human size function
  *
- * Version 1.4
+ * Version 1.5
  *
  * Copyright 2023 Ryan Farley <ryan.farley@gmx.com>
  *
@@ -22,9 +22,14 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+/* this is necessary when scaling upward; it may be defined externally to
+ * suit your tastes in precision or lack thereof */
+#if !defined(HUMANSIZE_EPSILON)
+#define HUMANSIZE_EPSILON 1e-8L
+#endif
 
 /* Decimal and binary prefixes */
-static char *humansize_dec_pre[] = {
+static char *humansize_dec[] = {
 	"",
 	"k",
 	"M",
@@ -36,7 +41,19 @@ static char *humansize_dec_pre[] = {
 	"Y",
 	NULL
 };
-static char *humansize_bin_pre[] = {
+static char *humansize_dec_up[] = {
+	"",
+	"m",
+	"μ",
+	"n",
+	"p",
+	"f",
+	"a",
+	"z",
+	"y",
+	NULL
+};
+static char *humansize_bin[] = {
 	"",
 	"Ki",
 	"Mi",
@@ -49,7 +66,41 @@ static char *humansize_bin_pre[] = {
 	NULL
 };
 
-/* scales a value to a fit with a prefix. base selects:
+/* to avoid -lm */
+#define HUMANSIZE_ABS(n) (((n) < 0.L) ? ((n) * -1.L) : (n))
+static int humansize_scale_(long double n, long double factor, char **pre, long double *res, char **res_pre)
+{
+	int ret = 1;
+
+	if (factor < 0) {
+		factor *= -1;
+		for (; *pre; ++pre) {
+			if ((n > 1.L) || (HUMANSIZE_ABS((n * factor) - factor) < HUMANSIZE_EPSILON)) {
+				break;
+			}
+			n *= factor;
+		}
+	} else {
+		for (; *pre; ++pre) {
+			if ((n / factor) < 1.) {
+				break;
+			}
+			n /= factor;
+		}
+	}
+
+	*res = n;
+
+	if (!*pre) {
+		--pre;
+		ret = 0;
+	}
+
+	*res_pre = *pre;
+	return ret;
+}
+
+/* scales a value down to a fit with a prefix. base selects:
  * 	-2: 	binary, using single-letter SI prefixes
  * 	2: 	binary, usinng two-letter IEC prefixes
  * 	10: 	decimal, using single-letter SI prefixes
@@ -67,15 +118,15 @@ static int humansize_scale(long double n, int base, long double *res, char **res
 
 	switch (base) {
 	case 2:
-		pre = humansize_bin_pre;
+		pre = humansize_bin;
 		div = 1024.;
 		break;
 	case -2:
-		pre = humansize_dec_pre;
+		pre = humansize_dec;
 		div = 1024.;
 		break;
 	case 10:
-		pre = humansize_dec_pre;
+		pre = humansize_dec;
 		div = 1000.;
 		break;
 	default:
@@ -84,21 +135,22 @@ static int humansize_scale(long double n, int base, long double *res, char **res
 		return -1;
 	}
 
-        for (; *pre; ++pre) {
-                if ((n / div) < 1.)
-                        break;
-                n /= div;
-        }
-
-	*res = n;
-
-	if (!*pre) {
-		--pre;
-		ret = 0;
+	return humansize_scale_(n, div, pre, res, res_pre);
+}
+/* scale a value up, rather than down. Only SI makes sense here, so no base
+ * support; every other parameter is the same as for humansize_scale */
+static int humansize_scale_up(long double n, long double *res, char **res_pre)
+{
+	return humansize_scale_(n, -1000, humansize_dec_up, res, res_pre);
+}
+/* scale a value up or down, depending on its value. Only SI makes sense here;
+ * same as above. */
+static int humansize_scale_full(long double n, long double *res, char **res_pre)
+{
+	if (n < 1.) {
+		return humansize_scale_(n, -1000, humansize_dec_up, res, res_pre);
 	}
-
-	*res_pre = *pre;
-	return ret;
+	return humansize_scale_(n, 1000, humansize_dec, res, res_pre);
 }
 
 /* Like sscanf. If base is 0, it will be assumed based on the full prefix. If
