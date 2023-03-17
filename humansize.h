@@ -1,6 +1,6 @@
 /* human size function
  *
- * Version 1.5
+ * Version 2.0
  *
  * Copyright 2023 Ryan Farley <ryan.farley@gmx.com>
  *
@@ -35,49 +35,91 @@
 #endif
 
 
-/* Decimal and binary prefixes */
-static char *humansize_dec[] = {
-	"",
-	"k",
-	"M",
-	"G",
-	"T",
-	"P",
-	"E",
-	"Z",
-	"Y",
-	NULL
+/* Decimal and binary prefix sets */
+struct humansize_preset {
+	/* factor -- positive for divisor, negative for multiplier */
+	double factor;
+	/* NULL-terminated array of prefix strings, starting with "" */
+	char **pre;
 };
-static char *humansize_dec_up[] = {
-	"",
-	"m",
-	HUMANSIZE_MU,
-	"n",
-	"p",
-	"f",
-	"a",
-	"z",
-	"y",
-	NULL
+
+
+static struct humansize_preset humansize_cust = {
+	.factor = 1024.L,
+	.pre = (char *[]){
+		"",
+		"K",
+		"M",
+		"G",
+		"T",
+		"P",
+		"E",
+		"Z",
+		"Y",
+		NULL
+	},
 };
-static char *humansize_bin[] = {
-	"",
-	"Ki",
-	"Mi",
-	"Gi",
-	"Ti",
-	"Pi",
-	"Ei",
-	"Zi",
-	"Yi",
-	NULL
+static struct humansize_preset humansize_si = {
+	.factor = 1000.L,
+	.pre = (char *[]){
+		"",
+		"k",
+		"M",
+		"G",
+		"T",
+		"P",
+		"E",
+		"Z",
+		"Y",
+		NULL
+	},
+};
+static struct humansize_preset humansize_si_up = {
+	.factor = -1000.L,
+	.pre = (char *[]){
+		"",
+		"m",
+		HUMANSIZE_MU,
+		"n",
+		"p",
+		"f",
+		"a",
+		"z",
+		"y",
+		NULL,
+	},
+};
+static struct humansize_preset humansize_iec = {
+	.factor = 1024.L,
+	.pre = (char *[]){
+		"",
+		"Ki",
+		"Mi",
+		"Gi",
+		"Ti",
+		"Pi",
+		"Ei",
+		"Zi",
+		"Yi",
+		NULL
+	},
 };
 
 /* to avoid -lm */
 #define HUMANSIZE_ABS(n) (((n) < 0.L) ? ((n) * -1.L) : (n))
-static int humansize_scale_(long double n, long double factor, char **pre, long double *res, char **res_pre)
+
+/* scales a value to fit with a prefix, from a set selected with preset.
+ * Scaled value is placed in res, selected prefix is placed in res_pre
+ *
+ * Returns:
+ * 	0 if the result could not be fully reduced,
+ * 	1 if the result could be fully reduced.
+*/
+static int humansize_scale(long double n, struct humansize_preset *preset, long double *res, char **res_pre)
 {
 	int ret = 1;
+	char **pre = preset->pre;
+	long double factor = preset->factor;
 
 	if (factor < 0) {
 		factor *= -1;
@@ -107,57 +149,12 @@ static int humansize_scale_(long double n, long double factor, char **pre, long 
 	return ret;
 }
 
-/* scales a value down to a fit with a prefix. base selects:
- * 	-2: 	binary, using single-letter SI prefixes
- * 	2: 	binary, usinng two-letter IEC prefixes
- * 	10: 	decimal, using single-letter SI prefixes
- *
- * Returns:
- * 	-1 if the base is invalid (result will not be reduced),
- * 	0 if the result could not be fully reduced,
- * 	1 if the result could be fully reduced.
-*/
-static int humansize_scale(long double n, int base, long double *res, char **res_pre)
-{
-	long double div;
-	char **pre;
-	int ret = 1;
-
-	switch (base) {
-	case 2:
-		pre = humansize_bin;
-		div = 1024.;
-		break;
-	case -2:
-		pre = humansize_dec;
-		div = 1024.;
-		break;
-	case 10:
-		pre = humansize_dec;
-		div = 1000.;
-		break;
-	default:
-		*res_pre = "";
-		*res = n;
-		return -1;
-	}
-
-	return humansize_scale_(n, div, pre, res, res_pre);
-}
-/* scale a value up, rather than down. Only SI makes sense here, so no base
- * support; every other parameter is the same as for humansize_scale */
-static int humansize_scale_up(long double n, long double *res, char **res_pre)
-{
-	return humansize_scale_(n, -1000, humansize_dec_up, res, res_pre);
-}
 /* scale a value up or down, depending on its value. Only SI makes sense here;
- * same as above. */
+ * same as above, otherwise */
 static int humansize_scale_full(long double n, long double *res, char **res_pre)
 {
-	if (n < 1.) {
-		return humansize_scale_(n, -1000, humansize_dec_up, res, res_pre);
-	}
-	return humansize_scale_(n, 1000, humansize_dec, res, res_pre);
+	struct humansize_preset *preset = (n < 1.L) ? &humansize_si_up : &humansize_si;
+	return humansize_scale(n, preset, res, res_pre);
 }
 
 /* Like sscanf. If base is 0, it will be assumed based on the full prefix. If
