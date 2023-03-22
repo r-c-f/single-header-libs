@@ -1,6 +1,6 @@
 /* human size function
  *
- * Version 2.0
+ * Version 2.1
  *
  * Copyright 2023 Ryan Farley <ryan.farley@gmx.com>
  *
@@ -18,6 +18,13 @@
 */
 #ifndef HUMANSIZE_H_INC
 #define HUMANSIZE_H_INC
+
+#if defined(__GNUC__)
+#define SHL_UNUSED __attribute__((unused))
+#else
+#define SHL_UNUSED
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -44,7 +51,7 @@ struct humansize_preset {
 };
 
 
-static struct humansize_preset humansize_cust = {
+SHL_UNUSED static struct humansize_preset humansize_cust = {
 	.factor = 1024.L,
 	.pre = (char *[]){
 		"",
@@ -59,7 +66,7 @@ static struct humansize_preset humansize_cust = {
 		NULL
 	},
 };
-static struct humansize_preset humansize_si = {
+SHL_UNUSED static struct humansize_preset humansize_si = {
 	.factor = 1000.L,
 	.pre = (char *[]){
 		"",
@@ -74,7 +81,7 @@ static struct humansize_preset humansize_si = {
 		NULL
 	},
 };
-static struct humansize_preset humansize_si_up = {
+SHL_UNUSED static struct humansize_preset humansize_si_up = {
 	.factor = -1000.L,
 	.pre = (char *[]){
 		"",
@@ -89,7 +96,7 @@ static struct humansize_preset humansize_si_up = {
 		NULL,
 	},
 };
-static struct humansize_preset humansize_iec = {
+SHL_UNUSED static struct humansize_preset humansize_iec = {
 	.factor = 1024.L,
 	.pre = (char *[]){
 		"",
@@ -115,7 +122,7 @@ static struct humansize_preset humansize_iec = {
  * 	0 if the result could not be fully reduced,
  * 	1 if the result could be fully reduced.
 */
-static int humansize_scale(long double n, struct humansize_preset *preset, long double *res, char **res_pre)
+SHL_UNUSED static int humansize_scale(long double n, struct humansize_preset *preset, long double *res, char **res_pre)
 {
 	int ret = 1;
 	char **pre = preset->pre;
@@ -151,7 +158,7 @@ static int humansize_scale(long double n, struct humansize_preset *preset, long 
 
 /* scale a value up or down, depending on its value. Only SI makes sense here;
  * same as above, otherwise */
-static int humansize_scale_full(long double n, long double *res, char **res_pre)
+SHL_UNUSED static int humansize_scale_full(long double n, long double *res, char **res_pre)
 {
 	struct humansize_preset *preset = (n < 1.L) ? &humansize_si_up : &humansize_si;
 	return humansize_scale(n, preset, res, res_pre);
@@ -165,7 +172,7 @@ static int humansize_scale_full(long double n, long double *res, char **res_pre)
  * - 	0 if there is no prefix detected
  * - 	1 if there is a prefix detected and the result is adjusted accordingly
 */
-static int humansize_parse(const char *s, int base, long double *res)
+SHL_UNUSED static int humansize_parse(const char *s, int base, long double *res)
 {
 	char *pre = "kmgtpezy";
 	char *end = NULL;
@@ -212,5 +219,5 @@ static int humansize_parse(const char *s, int base, long double *res)
 }
 
 
-
+#undef SHL_UNUSED
 #endif

@@ -1,6 +1,6 @@
 /* simple string builder
  *
- * Version 1.1
+ * Version 1.2
  *
  * Copyright 2023 Ryan Farley <ryan.farley@gmx.com>
  *
@@ -19,6 +19,13 @@
 
 #ifndef SSB_H_INC
 #define SSB_H_INC
+
+#if defined(__GNUC__)
+#define SHL_UNUSED __attribute__((unused))
+#else
+#define SHL_UNUSED
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -30,7 +37,7 @@ struct ssb {
 	size_t pos;
 };
 
-static int ssb_vprintf(struct ssb *s, const char *fmt, va_list ap)
+SHL_UNUSED static int ssb_vprintf(struct ssb *s, const char *fmt, va_list ap)
 {
 	va_list sizeap;
 	int size;
@@ -58,7 +65,7 @@ static int ssb_vprintf(struct ssb *s, const char *fmt, va_list ap)
 	return 0;
 }
 
-static int ssb_printf(struct ssb *s, const char *fmt, ...)
+SHL_UNUSED static int ssb_printf(struct ssb *s, const char *fmt, ...)
 {
 	int ret;
 	va_list ap;
@@ -68,7 +75,7 @@ static int ssb_printf(struct ssb *s, const char *fmt, ...)
 	return ret;
 }
 
-static void ssb_rewind(struct ssb *s)
+SHL_UNUSED static void ssb_rewind(struct ssb *s)
 {
 	s->pos = 0;
 	if (s->buf) {
@@ -76,7 +83,7 @@ static void ssb_rewind(struct ssb *s)
 	}
 }
 
-static void ssb_free(struct ssb *s)
+SHL_UNUSED static void ssb_free(struct ssb *s)
 {
 	s->pos = 0;
 	if (s->buf) {
@@ -87,12 +94,12 @@ static void ssb_free(struct ssb *s)
 }
 
 /* x variants -- can never fail! */
-static void ssb_xvprintf(struct ssb *s, const char *fmt, va_list ap)
+SHL_UNUSED static void ssb_xvprintf(struct ssb *s, const char *fmt, va_list ap)
 {
 	if (ssb_vprintf(s, fmt, ap))
 		abort();
 }
-static void ssb_xprintf(struct ssb *s, const char *fmt, ...)
+SHL_UNUSED static void ssb_xprintf(struct ssb *s, const char *fmt, ...)
 {
 	va_list ap;
 
@@ -101,5 +108,6 @@ static void ssb_xprintf(struct ssb *s, const char *fmt, ...)
 	va_end(ap);
 }
 
+#undef SHL_UNUSED
 #endif
 
