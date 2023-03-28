@@ -1,6 +1,6 @@
 /* cursutil -- useful routines for working with curses
  *
- * Version 1.7
+ * Version 1.8
  *
  * Copyright 2022 Ryan Farley <ryan.farley@gmx.com>
  *
@@ -21,6 +21,12 @@
 #include <term.h>
 #include <stdarg.h>
 
+#if defined(__GNUC__)
+#define SHL_UNUSED __attribute__((unused))
+#else
+#define SHL_UNUSED
+#endif
+
 /* Clear a border created by box() from a window */
 #define unbox(w) wborder(w, ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ')
 
@@ -35,16 +41,16 @@
 /* and enter/return */
 #define CASE_ALL_RETURN case KEY_ENTER: case '\n': case '\r'
 /* move and vw_printw */
-static void vw_mvprintw(WINDOW *w, int y, int x,  const char *fmt, va_list args)
+SHL_UNUSED static void vw_mvprintw(WINDOW *w, int y, int x,  const char *fmt, va_list args)
 {
 	wmove(w, y, x);
        	vw_printw(w, fmt, args);
 }
 
 /* an optional status line window */
-static WINDOW *cu_stat_win;
+SHL_UNUSED static WINDOW *cu_stat_win;
 /* helper for status line initialization */
-static int cu_stat_init_(WINDOW *w, int cols)
+SHL_UNUSED static int cu_stat_init_(WINDOW *w, int cols)
 {
 	cu_stat_win = w;
 	return OK;
@@ -54,7 +60,7 @@ enum cu_stat_pos {
 	CU_STAT_BOTTOM = -1,
 	CU_STAT_TOP = 1,
 };
-static int cu_stat_init(enum cu_stat_pos pos)
+SHL_UNUSED static int cu_stat_init(enum cu_stat_pos pos)
 {
 	return ripoffline(pos, cu_stat_init_);
 }
@@ -66,7 +72,7 @@ static int cu_stat_init(enum cu_stat_pos pos)
 } while (0)
 #define cu_stat_move(y, x) wmove(cu_stat_win, y, x)
 /* printw for status line, but set attributes */
-static void cu_stat_aprintw(int attr, char *fmt, ...)
+SHL_UNUSED static void cu_stat_aprintw(int attr, char *fmt, ...)
 {
 	va_list ap;
 	attr_t oldattr;
@@ -87,7 +93,7 @@ static void cu_stat_aprintw(int attr, char *fmt, ...)
 }
 
 /* print an entirely new message to the status line */
-static void cu_stat_setw(char *fmt, ...)
+SHL_UNUSED static void cu_stat_setw(char *fmt, ...)
 {
 	va_list ap;
 
@@ -99,3 +105,4 @@ static void cu_stat_setw(char *fmt, ...)
 	wnoutrefresh(cu_stat_win);
 }
 
+#undef SHL_UNUSED

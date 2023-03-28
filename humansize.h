@@ -1,6 +1,6 @@
 /* human size function
  *
- * Version 1.1
+ * Version 2.1
  *
  * Copyright 2023 Ryan Farley <ryan.farley@gmx.com>
  *
@@ -18,62 +18,150 @@
 */
 #ifndef HUMANSIZE_H_INC
 #define HUMANSIZE_H_INC
+
+#if defined(__GNUC__)
+#define SHL_UNUSED __attribute__((unused))
+#else
+#define SHL_UNUSED
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 
-/* Like snprintf. base selects either decimal or binary prefixes for 10 or 2,
- * respectively. Output formatted N [PREFIX]UNIT */
-static int humansize_print(char *buf, size_t size, double n, int base, char *unit)
-{
-	double div;
+/* this is necessary when scaling upward; it may be defined externally to
+ * suit your tastes in precision or lack thereof */
+#if !defined(HUMANSIZE_EPSILON)
+#define HUMANSIZE_EPSILON 1e-8L
+#endif
+
+/* on the chance that you despise all unicode, or want a different code point,
+ * define your mu here */
+#if !defined(HUMANSIZE_MU)
+#define HUMANSIZE_MU "µ"
+#endif
+
+
+/* Decimal and binary prefix sets */
+struct humansize_preset {
+	/* factor -- positive for divisor, negative for multiplier */
+	double factor;
+	/* NULL-terminated array of prefix strings, starting with "" */
 	char **pre;
-	char *dec_pre[] = {
-                "",
-                "k",
-                "M",
-                "G",
-                "T",
-                "P",
-                "E",
+};
+
+
+SHL_UNUSED static struct humansize_preset humansize_cust = {
+	.factor = 1024.L,
+	.pre = (char *[]){
+		"",
+		"K",
+		"M",
+		"G",
+		"T",
+		"P",
+		"E",
 		"Z",
 		"Y",
-                NULL
-        };
-        char *bin_pre[] = {
-                "",
-                "Ki",
-                "Mi",
-                "Gi",
-                "Ti",
-                "Pi",
-                "Ei",
+		NULL
+	},
+};
+SHL_UNUSED static struct humansize_preset humansize_si = {
+	.factor = 1000.L,
+	.pre = (char *[]){
+		"",
+		"k",
+		"M",
+		"G",
+		"T",
+		"P",
+		"E",
+		"Z",
+		"Y",
+		NULL
+	},
+};
+SHL_UNUSED static struct humansize_preset humansize_si_up = {
+	.factor = -1000.L,
+	.pre = (char *[]){
+		"",
+		"m",
+		HUMANSIZE_MU,
+		"n",
+		"p",
+		"f",
+		"a",
+		"z",
+		"y",
+		NULL,
+	},
+};
+SHL_UNUSED static struct humansize_preset humansize_iec = {
+	.factor = 1024.L,
+	.pre = (char *[]){
+		"",
+		"Ki",
+		"Mi",
+		"Gi",
+		"Ti",
+		"Pi",
+		"Ei",
 		"Zi",
 		"Yi",
-                NULL
-        };
+		NULL
+	},
+};
 
-	if (base == 2) {
-		pre = bin_pre;
-		div = 1024.;
-	} else if (base == 10) {
-		pre = dec_pre;
-		div = 1000.;
+/* to avoid -lm */
+#define HUMANSIZE_ABS(n) (((n) < 0.L) ? ((n) * -1.L) : (n))
+
+/* scales a value to fit with a prefix, from a set selected with preset.
+ * Scaled value is placed in res, selected prefix is placed in res_pre
+ *
+ * Returns:
+ * 	0 if the result could not be fully reduced,
+ * 	1 if the result could be fully reduced.
+*/
+SHL_UNUSED static int humansize_scale(long double n, struct humansize_preset *preset, long double *res, char **res_pre)
+{
+	int ret = 1;
+	char **pre = preset->pre;
+	long double factor = preset->factor;
+
+	if (factor < 0) {
+		factor *= -1;
+		for (; *pre; ++pre) {
+			if ((n > 1.L) || (HUMANSIZE_ABS((n * factor) - factor) < HUMANSIZE_EPSILON)) {
+				break;
+			}
+			n *= factor;
+		}
 	} else {
-		return -1;
+		for (; *pre; ++pre) {
+			if ((n / factor) < 1.) {
+				break;
+			}
+			n /= factor;
+		}
 	}
 
-        for (; *pre; ++pre) {
-                if ((n / div) < 1.)
-                        break;
-                n /= div;
-        }
+	*res = n;
 
-	if (*pre) {
-		return snprintf(buf, size, "%f %s%s", n, *pre, unit);
+	if (!*pre) {
+		--pre;
+		ret = 0;
 	}
 
-	return -1;
+	*res_pre = *pre;
+	return ret;
+}
+
+/* scale a value up or down, depending on its value. Only SI makes sense here;
+ * same as above, otherwise */
+SHL_UNUSED static int humansize_scale_full(long double n, long double *res, char **res_pre)
+{
+	struct humansize_preset *preset = (n < 1.L) ? &humansize_si_up : &humansize_si;
+	return humansize_scale(n, preset, res, res_pre);
 }
 
 /* Like sscanf. If base is 0, it will be assumed based on the full prefix. If
@@ -84,14 +172,14 @@ static int humansize_print(char *buf, size_t size, double n, int base, char *uni
  * - 	0 if there is no prefix detected
  * - 	1 if there is a prefix detected and the result is adjusted accordingly
 */
-static int humansize_parse(const char *s, int base, double *res)
+SHL_UNUSED static int humansize_parse(const char *s, int base, long double *res)
 {
 	char *pre = "kmgtpezy";
 	char *end = NULL;
 	int i;
-	double mult;
+	long double mult;
 
-	*res = strtod(s, &end);
+	*res = strtold(s, &end);
 	if (end == s) {
 		return -1;
 	}
@@ -131,5 +219,5 @@ static int humansize_parse(const char *s, int base, double *res)
 }
 
 
-
+#undef SHL_UNUSED
 #endif
