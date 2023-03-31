@@ -92,7 +92,7 @@ static bool ssb_addc_test(int max, enum ssb_grow grow)
 
 static void print_usage(char *name)
 {
-	fprintf(stderr, "Usage: %s [print_ops] [file_ops] [file]\n", name);
+	fprintf(stderr, "Usage: %s [ops] \n", name);
 }
 
 #define ARRAYLEN(a) (sizeof(a) / sizeof(*a))
