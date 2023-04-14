@@ -1,8 +1,9 @@
-/* cursutil -- useful routines for working with curses
+/* cursutil 
+ * useful routines for working with curses
  *
- * Version 1.8
+ * Version 1.7
  *
- * Copyright 2022 Ryan Farley <ryan.farley@gmx.com>
+ * Copyright 2021 Ryan Farley <ryan.farley@gmx.com>
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -14,18 +15,26 @@
  * SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
  * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
- * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * N CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#pragma once
+
+#if !defined(CURSUTILH_INCLUDE)
+#define CURSUTILH_INCLUDE
+
+#if !defined(SHL_UNUSED) /* because someone might have their own */
+	#if (defined(__cplusplus) && (__cplusplus >= 201703L)) ||\
+    	(defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 202311L))
+		#define SHL_UNUSED [[maybe_unused]]
+	#elif defined(__GNUC__)
+		#define SHL_UNUSED __attribute__((unused))
+	#else
+		#define SHL_UNUSED
+	#endif
+#endif
+
 #include <curses.h>
 #include <term.h>
 #include <stdarg.h>
-
-#if defined(__GNUC__)
-#define SHL_UNUSED __attribute__((unused))
-#else
-#define SHL_UNUSED
-#endif
 
 /* Clear a border created by box() from a window */
 #define unbox(w) wborder(w, ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ')
@@ -105,4 +114,9 @@ SHL_UNUSED static void cu_stat_setw(char *fmt, ...)
 	wnoutrefresh(cu_stat_win);
 }
 
-#undef SHL_UNUSED
+#if defined(SHL_UNUSED)
+	#undef SHL_UNUSED
+#endif /* defined(SHL_UNUSED) */
+
+#endif /* !defined(CURSUTILH_INCLUDE) */
+

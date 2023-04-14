@@ -1,4 +1,5 @@
-/* sassert -- static assertion on as many platforms as possible
+/* sassert 
+ * static assertion on as many platforms as possible
  *
  * Version 1.2
  *
@@ -14,8 +15,9 @@
  * SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
  * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
- * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * N CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
+
 #include <assert.h>
 
 /* because static_assert is guaranteed to be a macro in C11, we can avoid
@@ -61,4 +63,5 @@
 #endif
 
 #endif /* !defined(static_assert) */
+
 

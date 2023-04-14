@@ -1,4 +1,5 @@
-/* human size function
+/* humansize 
+ * humn sizing/scaling functions
  *
  * Version 2.1
  *
@@ -14,15 +15,21 @@
  * SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
  * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
- * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * N CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#ifndef HUMANSIZE_H_INC
-#define HUMANSIZE_H_INC
 
-#if defined(__GNUC__)
-#define SHL_UNUSED __attribute__((unused))
-#else
-#define SHL_UNUSED
+#if !defined(HUMANSIZEH_INCLUDE)
+#define HUMANSIZEH_INCLUDE
+
+#if !defined(SHL_UNUSED) /* because someone might have their own */
+	#if (defined(__cplusplus) && (__cplusplus >= 201703L)) ||\
+    	(defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 202311L))
+		#define SHL_UNUSED [[maybe_unused]]
+	#elif defined(__GNUC__)
+		#define SHL_UNUSED __attribute__((unused))
+	#else
+		#define SHL_UNUSED
+	#endif
 #endif
 
 #include <stdio.h>
@@ -218,6 +225,9 @@ SHL_UNUSED static int humansize_parse(const char *s, int base, long double *res)
 	return 1;
 }
 
+#if defined(SHL_UNUSED)
+	#undef SHL_UNUSED
+#endif /* defined(SHL_UNUSED) */
 
-#undef SHL_UNUSED
-#endif
+#endif /* !defined(HUMANSIZEH_INCLUDE) */
+

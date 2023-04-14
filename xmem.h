@@ -1,4 +1,5 @@
-/* xmem -- memory operations that can only fail catastrophically
+/* xmem 
+ * memory/string functions that only fail catastrophically
  *
  * Version 1.5
  *
@@ -14,10 +15,22 @@
  * SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
  * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
- * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * N CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#ifndef XMEM_H_INC
-#define XMEM_H_INC
+
+#if !defined(XMEMH_INCLUDE)
+#define XMEMH_INCLUDE
+
+#if !defined(SHL_UNUSED) /* because someone might have their own */
+	#if (defined(__cplusplus) && (__cplusplus >= 201703L)) ||\
+    	(defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 202311L))
+		#define SHL_UNUSED [[maybe_unused]]
+	#elif defined(__GNUC__)
+		#define SHL_UNUSED __attribute__((unused))
+	#else
+		#define SHL_UNUSED
+	#endif
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,13 +38,7 @@
 #include <stdarg.h>
 #include <stdint.h>
 
-#if defined(__GNUC__)
-#define XMEM_UNUSED __attribute__((unused))
-#else
-#define XMEM_UNUSED
-#endif
-
-XMEM_UNUSED
+SHL_UNUSED
 static void *xmalloc(size_t len)
 {
 	void *ret;
@@ -40,7 +47,7 @@ static void *xmalloc(size_t len)
 	return ret;
 }
 
-XMEM_UNUSED
+SHL_UNUSED
 static void *xcalloc(size_t nmemb, size_t size)
 {
 	void *ret;
@@ -49,7 +56,7 @@ static void *xcalloc(size_t nmemb, size_t size)
 	return ret;
 }
 
-XMEM_UNUSED
+SHL_UNUSED
 static void *xrealloc(void *ptr, size_t len)
 {
 	if (!(ptr = realloc(ptr, len)))
@@ -61,7 +68,7 @@ static void *xrealloc(void *ptr, size_t len)
  *
  * Like reallocarray() present on some platforms, will catch any possible
  * overflows */
-XMEM_UNUSED
+SHL_UNUSED
 static void *xreallocarray(void *ptr, size_t nmemb, size_t size)
 {
 	if (size && nmemb > SIZE_MAX / size) {
@@ -70,7 +77,7 @@ static void *xreallocarray(void *ptr, size_t nmemb, size_t size)
 	return xrealloc(ptr, nmemb * size);
 }
 
-XMEM_UNUSED
+SHL_UNUSED
 static char *xstrdup(const char *str)
 {
 	char *ret;
@@ -90,7 +97,7 @@ static char *xstrdup(const char *str)
  * needed size. The current length of the string in the buffer is returned,
  * to allow for manual trimming if desired.
 */
-XMEM_UNUSED
+SHL_UNUSED
 static size_t xvasnprintf(char **strp, size_t *size, const char *fmt, va_list ap)
 {
 	va_list testap;
@@ -113,7 +120,7 @@ static size_t xvasnprintf(char **strp, size_t *size, const char *fmt, va_list ap
 	return tsize;
 }
 
-XMEM_UNUSED
+SHL_UNUSED
 static size_t xasnprintf(char **strp, size_t *size, const char *fmt, ...)
 {
 	va_list ap;
@@ -129,7 +136,7 @@ static size_t xasnprintf(char **strp, size_t *size, const char *fmt, ...)
 /* x*asprintf: print to a newly-allocated buffer
  *
  * A bit like the asprintf family on some platforms, but will work anywhere */
-XMEM_UNUSED
+SHL_UNUSED
 static void xvasprintf(char **strp, const char *fmt, va_list ap)
 {
 	size_t s = 0;
@@ -137,7 +144,7 @@ static void xvasprintf(char **strp, const char *fmt, va_list ap)
 }
 
 
-XMEM_UNUSED
+SHL_UNUSED
 static void xasprintf(char **strp, const char *fmt, ...)
 {
 	va_list ap;
@@ -151,7 +158,7 @@ static void xasprintf(char **strp, const char *fmt, ...)
 /* strfreev: free a NULL-terminated array of strings
  *
  * NULL-terminated array being a bit like argv in main(). */
-XMEM_UNUSED
+SHL_UNUSED
 static void strfreev(char **strv)
 {
 	if (strv) {
@@ -163,6 +170,9 @@ static void strfreev(char **strv)
 	}
 }
 
-#undef XMEM_UNUSED
+#if defined(SHL_UNUSED)
+	#undef SHL_UNUSED
+#endif /* defined(SHL_UNUSED) */
 
-#endif
+#endif /* !defined(XMEMH_INCLUDE) */
+

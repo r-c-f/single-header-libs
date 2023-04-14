@@ -1,4 +1,5 @@
-/* sopt -- simple option parsing
+/* sopt 
+ * simple option parsing... or at least it used to be
  *
  * Version 1.9
  *
@@ -14,16 +15,21 @@
  * SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
  * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
- * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * N CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#ifndef SOPTH_INCLUDE
+#if !defined(SOPTH_INCLUDE)
 #define SOPTH_INCLUDE
 
-#if defined(__GNUC__)
-#define SHL_UNUSED __attribute__((unused))
-#else
-#define SHL_UNUSED
+#if !defined(SHL_UNUSED) /* because someone might have their own */
+	#if (defined(__cplusplus) && (__cplusplus >= 201703L)) ||\
+    	(defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 202311L))
+		#define SHL_UNUSED [[maybe_unused]]
+	#elif defined(__GNUC__)
+		#define SHL_UNUSED __attribute__((unused))
+	#else
+		#define SHL_UNUSED
+	#endif
 #endif
 
 #include <stdio.h>
@@ -567,5 +573,9 @@ SHL_UNUSED static int sopt_getopt_s(int argc, char **argv, struct sopt *opt, int
 	return sopt_getopt(argc, argv, opt, cpos, optind, arg);
 }
 
-#undef SHL_UNUSED
-#endif
+#if defined(SHL_UNUSED)
+	#undef SHL_UNUSED
+#endif /* defined(SHL_UNUSED) */
+
+#endif /* !defined(SOPTH_INCLUDE) */
+

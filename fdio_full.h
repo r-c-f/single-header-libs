@@ -1,4 +1,5 @@
-/* fdio_full -- read/write without shortness
+/* fdio_full 
+ * read/write without shortness
  *
  * Version 1.1
  *
@@ -14,15 +15,21 @@
  * SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
  * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
- * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * N CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-#ifndef FDIO_FULL_H_INC
-#define FDIO_FULL_H_INC
 
-#if defined(__GNUC__)
-#define SHL_UNUSED __attribute__((unused))
-#else
-#define SHL_UNUSED
+#if !defined(FDIO_FULLH_INCLUDE)
+#define FDIO_FULLH_INCLUDE
+
+#if !defined(SHL_UNUSED) /* because someone might have their own */
+	#if (defined(__cplusplus) && (__cplusplus >= 201703L)) ||\
+    	(defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 202311L))
+		#define SHL_UNUSED [[maybe_unused]]
+	#elif defined(__GNUC__)
+		#define SHL_UNUSED __attribute__((unused))
+	#else
+		#define SHL_UNUSED
+	#endif
 #endif
 
 #include <unistd.h>
@@ -99,5 +106,9 @@ SHL_UNUSED static bool write_full(int fd, const void *buf, size_t count, enum fd
 	return true;
 }
 
-#undef SHL_UNUSED
-#endif
+#if defined(SHL_UNUSED)
+	#undef SHL_UNUSED
+#endif /* defined(SHL_UNUSED) */
+
+#endif /* !defined(FDIO_FULLH_INCLUDE) */
+
