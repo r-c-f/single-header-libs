@@ -1,0 +1,10 @@
+#if !defined(UNUSED) /* because someone might have their own */
+	#if (defined(__cplusplus) && (__cplusplus >= 201703L)) ||\
+    	(defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 202311L))
+		#define UNUSED [[maybe_unused]]
+	#elif defined(__GNUC__)
+		#define UNUSED __attribute__((unused))
+	#else
+		#define UNUSED
+	#endif
+#endif

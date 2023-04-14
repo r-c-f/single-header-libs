@@ -1,0 +1,5 @@
+name(sassert)
+desc(static assertion on as many platforms as possible)
+vers(1.2)
+mit(2022)
+base()
