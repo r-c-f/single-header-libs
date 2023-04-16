@@ -1,4 +1,4 @@
-/* xmem 
+/* xmem
  * memory/string functions that only fail catastrophically
  *
  * Version 1.5

@@ -1,4 +1,4 @@
-/* unused 
+/* unused
  * Pick the right attribute to silence unused function/variable errors
  *
  * Version 1.0

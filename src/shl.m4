@@ -16,7 +16,7 @@ define(`UPPER', `ABCDEFGHIJKLMNOPQRSTUVWXYZ')
 define(`toupper', `translit($1, LOWER, UPPER)')
 
 dnl the actual start of the library: the name
-define(`name', `define(`NAME', $1)'/* $1 )
+define(`name', `define(`NAME', $1)'/* $1)
 dnl and the description, if there is one
 define(`desc', ` * $1')
 dnl and the version
@@ -43,7 +43,7 @@ define(`mit', ` *
 dnl Include guard stuff
 define(`GUARD_NAME', `toupper(NAME)H_INCLUDE')
 define(`guard_start',`#if !defined(GUARD_NAME)
-#define GUARD_NAME'
+#`define' GUARD_NAME'
 )
 dnl And end the guard
 define(`guard_end', `#endif /* !defined(GUARD_NAME) */')
@@ -69,4 +69,4 @@ define(`guard_base', `guard_start()
 base()
 guard_end()')
 
-divert(0)
+divert(0)dnl

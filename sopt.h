@@ -1,4 +1,4 @@
-/* sopt 
+/* sopt
  * simple option parsing... or at least it used to be
  *
  * Version 1.9

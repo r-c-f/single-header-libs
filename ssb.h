@@ -1,4 +1,4 @@
-/* ssb 
+/* ssb
  * simple string builder/buffer
  *
  * Version 1.3

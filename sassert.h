@@ -1,4 +1,4 @@
-/* sassert 
+/* sassert
  * static assertion on as many platforms as possible
  *
  * Version 1.2

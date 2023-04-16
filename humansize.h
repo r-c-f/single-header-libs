@@ -1,4 +1,4 @@
-/* humansize 
+/* humansize
  * humn sizing/scaling functions
  *
  * Version 2.1

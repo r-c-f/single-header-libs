@@ -1,4 +1,4 @@
-/* cursutil 
+/* cursutil
  * useful routines for working with curses
  *
  * Version 1.7

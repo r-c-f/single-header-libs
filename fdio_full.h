@@ -1,4 +1,4 @@
-/* fdio_full 
+/* fdio_full
  * read/write without shortness
  *
  * Version 1.1

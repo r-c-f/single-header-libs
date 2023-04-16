@@ -1,10 +1,8 @@
 .SUFFIXES:
 
-BASE_DEP = shl.m4 unused.h.in
+M4 = m4
 
-# a bit of awk to deal with the fact that m4 is kind of bad and leaves leading
-# blank lines unless literally everything ends with dnl, which... no. 
-LEADSTRIP = awk 'NF {p=1} p'
+BASE_DEP = shl.m4 unused.h.in
 
 all: cursutil.h fdio_full.h humansize.h sassert.h ssb.h sopt.h unused.h xmem.h
 
@@ -25,7 +23,7 @@ clean:
 
 .SUFFIXES: .h .m4
 .m4.h:
-	m4 shl.m4 $< | $(LEADSTRIP) > $@
+	$(M4) shl.m4 $< > $@
 
 
 
