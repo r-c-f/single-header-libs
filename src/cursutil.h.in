@@ -27,6 +27,7 @@ SHL_UNUSED static WINDOW *cu_stat_win;
 /* helper for status line initialization */
 SHL_UNUSED static int cu_stat_init_(WINDOW *w, int cols)
 {
+	(void)cols; /* we don't use it, but we need it */
 	cu_stat_win = w;
 	return OK;
 }
