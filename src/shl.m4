@@ -7,8 +7,8 @@ define(`MY_MAIL', `ryan.farley@gmx.com')
 dnl We use dnl for comments. # is dumb.
 changecom()
 
-dnl a way to include files without processing. Ugly? Yes. But it works, mostly
-define(`uinclude', `syscmd(cat $1)')
+dnl get the BSD paste macro on all systems
+ifdef(`paste', `', `define(`paste', `syscmd(cat $1)'')')
 
 dnl Translate to uppercase. Needed to generate the guard name
 define(`LOWER', `abcdefghijklmnopqrstuvwxyz')
@@ -49,7 +49,7 @@ dnl And end the guard
 define(`guard_end', `#endif /* !defined(GUARD_NAME) */')
 
 dnl Include the base library
-define(`base', `uinclude(NAME.h.in)')
+define(`base', `paste(NAME.h.in)')
 
 dnl a bit of code to provide us with UNUSED....
 define(`unused_start', `syscmd(`sed s/UNUSED/SHL_UNUSED/g <unused.h.in')')
