@@ -74,7 +74,10 @@ SHL_UNUSED static int ssb_vprintf(struct ssb *s, const char *fmt, va_list ap)
 	}
 
 	va_copy(sizeap, ap);
-	if ((size = vsnprintf(s->buf + s->pos, s->size - s->pos, fmt, sizeap)) >= s->size - s->pos) {
+	size = vsnprintf(s->buf + s->pos, s->size - s->pos, fmt, sizeap);
+	if (size < 0) {
+		return -1;
+	} else if ((size_t)size >= s->size - s->pos) {
 		if (!ssb_grow_min(s, size)) {
 			return -1;
 		}

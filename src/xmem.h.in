@@ -78,8 +78,8 @@ static size_t xvasnprintf(char **strp, size_t *size, const char *fmt, va_list ap
 		abort();
 	va_end(testap);
 
-	if (tsize >= *size) {
-		*size = tsize + 1;
+	if ((size_t)tsize >= *size) {
+		*size = (size_t)tsize + 1;
 		*strp = xrealloc(*strp, *size);
 		vsnprintf(*strp, *size, fmt, ap);
 	}
