@@ -136,7 +136,7 @@ union sopt_arg {
 #define SOPT_VALID(opt) ((opt)->val != SOPT_INVAL)
 
 /*simple helper -- print out usage example*/
-SHL_UNUSED static inline void sopt_usage_printopt(struct sopt *opt)
+SHL_UNUSED static void sopt_usage_printopt(struct sopt *opt)
 {
 	bool shortopt, longopt;
 
@@ -226,12 +226,12 @@ SHL_UNUSED static void sopt_usage_static(struct sopt *opt, const char *name, con
 	}
 }
 /* for convenience, set the static usage values for future use */
-SHL_UNUSED static inline void sopt_usage_set(struct sopt *opt, const char *name, const char *desc)
+SHL_UNUSED static void sopt_usage_set(struct sopt *opt, const char *name, const char *desc)
 {
 	sopt_usage_static(opt, name, desc, true);
 }
 /* for convenience, call sopt_usage_static with stored parameters */
-SHL_UNUSED static inline void sopt_usage_s(void)
+SHL_UNUSED static void sopt_usage_s(void)
 {
 	sopt_usage_static(NULL, NULL, NULL, false);
 }

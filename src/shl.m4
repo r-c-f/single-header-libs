@@ -8,7 +8,7 @@ dnl We use dnl for comments. # is dumb.
 changecom()
 
 dnl get the BSD paste macro on all systems
-ifdef(`paste', `', `define(`paste', `syscmd(cat $1)'')')
+ifdef(`paste', `', `define(`paste', `syscmd(cat $1)''))
 
 dnl Translate to uppercase. Needed to generate the guard name
 define(`LOWER', `abcdefghijklmnopqrstuvwxyz')
