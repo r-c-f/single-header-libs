@@ -21,7 +21,7 @@ dnl and the description, if there is one
 define(`desc', ` * $1')
 dnl and the version
 define(`vers', ` *
- * Version $1')
+ * Version $1-syscmd(git rev-list --count HEAD NAME.h.in) *')
 dnl and an MIT license: year
 define(`mit', ` *
  * Copyright $1 MY_NAME <MY_MAIL>

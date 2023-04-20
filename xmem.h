@@ -1,7 +1,8 @@
 /* xmem
  * memory/string functions that only fail catastrophically
  *
- * Version 1.5
+ * Version 1.5-2
+ *
  *
  * Copyright 2021 Ryan Farley <ryan.farley@gmx.com>
  *

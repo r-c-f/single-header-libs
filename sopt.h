@@ -1,7 +1,8 @@
 /* sopt
  * simple option parsing... or at least it used to be
  *
- * Version 1.9
+ * Version 1.9-2
+ *
  *
  * Copyright 2021 Ryan Farley <ryan.farley@gmx.com>
  *

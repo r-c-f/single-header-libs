@@ -1,7 +1,8 @@
 /* cursutil
  * useful routines for working with curses
  *
- * Version 1.7
+ * Version 1.7-2
+ *
  *
  * Copyright 2021 Ryan Farley <ryan.farley@gmx.com>
  *

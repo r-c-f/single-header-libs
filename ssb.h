@@ -1,7 +1,8 @@
 /* ssb
  * simple string builder/buffer
  *
- * Version 1.3
+ * Version 1.3-2
+ *
  *
  * Copyright 2023 Ryan Farley <ryan.farley@gmx.com>
  *

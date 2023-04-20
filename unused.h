@@ -1,7 +1,8 @@
 /* unused
  * Pick the right attribute to silence unused function/variable errors
  *
- * Version 1.0
+ * Version 1.0-1
+ *
  *
  * Copyright 2023 Ryan Farley <ryan.farley@gmx.com>
  *
