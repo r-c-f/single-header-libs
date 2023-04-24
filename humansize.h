@@ -1,7 +1,7 @@
 /* humansize
  * humn sizing/scaling functions
  *
- * Version 3.0-1
+ * Version 3.0-2
  *
  *
  * Copyright 2023 Ryan Farley <ryan.farley@gmx.com>
