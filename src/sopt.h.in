@@ -107,7 +107,7 @@ SHL_UNUSED static void sopt_usage_printopt(struct sopt *opt)
 	bool shortopt, longopt;
 
 	shortopt = (((unsigned char)opt->val) == opt->val) && isalnum(opt->val);
-	longopt = opt->name;
+	longopt = (opt->name != NULL);
 	if (!(shortopt || longopt)) {
 		return; /*borked, yo*/
 	}
