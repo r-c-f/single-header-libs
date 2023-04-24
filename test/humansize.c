@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #include "../humansize.h"
 
 
@@ -55,10 +56,10 @@ int main(int argc, char **argv)
 			print_usage(argv[0]);
 			return EXIT_FAILURE;
 		}
-		ret = humansize_scale(n, preset, &res, &pre);
+		ret = humansize_scalel(n, preset, &res, &pre);
 	} else if (!strcmp(argv[1], "scale_full")) {
 		n = strtod(argv[2], NULL);
-		ret = humansize_scale_full(n, &res, &pre);
+		ret = humansize_scalel_full(n, &res, &pre);
 	} else if (!strcmp(argv[1], "parse")) {
 		if (argc == 3) {
 			base = 0;

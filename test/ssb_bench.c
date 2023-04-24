@@ -1,8 +1,10 @@
+#define _POSIX_C_SOURCE 200809L
 #include "../ssb.h"
 #include "../humansize.h"
 #include <assert.h>
 #include <string.h>
 #include <sys/time.h>
+#include <sys/types.h>
 
 static void print_ssb_info(struct ssb *s)
 {
