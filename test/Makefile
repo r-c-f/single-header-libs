@@ -14,4 +14,4 @@ humansize: humansize.c ../humansize.h
 	$(CC) $(CFLAGS) -lm humansize.c -o humansize
 
 clean:
-	rm sopt_arg humansize ssb ssb_bench
+	rm -f sopt_arg humansize ssb ssb_bench
