@@ -55,13 +55,13 @@ struct humansize_preset {
 	/* factor -- positive for divisor, negative for multiplier */
 	float factor;
 	/* NULL-terminated array of prefix strings, starting with "" */
-	char **pre;
+	char *pre[];
 };
 
 
 SHL_UNUSED static struct humansize_preset humansize_cust = {
 	.factor = 1024,
-	.pre = (char *[]){
+	.pre = {
 		"",
 		"K",
 		"M",
@@ -76,7 +76,7 @@ SHL_UNUSED static struct humansize_preset humansize_cust = {
 };
 SHL_UNUSED static struct humansize_preset humansize_si = {
 	.factor = 1000,
-	.pre = (char *[]){
+	.pre = {
 		"",
 		"k",
 		"M",
@@ -91,7 +91,7 @@ SHL_UNUSED static struct humansize_preset humansize_si = {
 };
 SHL_UNUSED static struct humansize_preset humansize_si_up = {
 	.factor = -1000,
-	.pre = (char *[]){
+	.pre = {
 		"",
 		"m",
 		HUMANSIZE_MU,
@@ -106,7 +106,7 @@ SHL_UNUSED static struct humansize_preset humansize_si_up = {
 };
 SHL_UNUSED static struct humansize_preset humansize_iec = {
 	.factor = 1024,
-	.pre = (char *[]){
+	.pre = {
 		"",
 		"Ki",
 		"Mi",

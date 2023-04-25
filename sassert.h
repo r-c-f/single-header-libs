@@ -32,7 +32,10 @@
 	#warning "No native static assertion support; see errors about divide-by-zero for failures"
 	#define static_assert(exp, str) \
 		enum { static_assert_= 1/!!(exp), }
-
+#elif defined (__WATCOMC__)
+	#warning "No native static assertion support; see errors about array size for failures"
+	#define static_assert(exp, str) \
+		extern char (*static_assert(void)) [sizeof(char[1 - 2*!(exp)])]	
 #elif defined(__GNUC__)
 	/* see if we can get away with _Static_assert, which is present for
 	 * all C standards in gcc >= 4.6 */
@@ -46,8 +49,10 @@
 			extern char (*static_assert(void)) [sizeof(char[1 - 2*!(exp)])]
 	#endif
 /* clang -- has a nice feature to test for it */
-#elif defined(__clang__) && __has_feature(c_static_assert)
-	#define static_assert(exp, str) _Static_assert(exp, str)
+#elif defined(__clang__)
+	#if __has_feature(c_static_assert)
+		#define static_assert(exp, str) _Static_assert(exp, str)
+	#endif
 
 /* Microsoft -- anything NT *should* have this
  *
