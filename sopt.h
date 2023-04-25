@@ -341,7 +341,7 @@ SHL_UNUSED static int sopt_getopt(int argc, char **argv, struct sopt *opt, int *
 	if (argv[*optind][1] == '-') {
 		/*end of options*/
 		if (!argv[*optind][2]) {
-			++*optind; //optind points at next non-option
+			++*optind; /* optind points at next non-option */
 			return -1;
 		}
 		/*or a long option*/
