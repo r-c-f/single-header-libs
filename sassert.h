@@ -1,7 +1,7 @@
 /* sassert
  * static assertion on as many platforms as possible
  *
- * Version 1.2-1
+ * Version 1.2-2
  *
  *
  * Copyright 2022 Ryan Farley <ryan.farley@gmx.com>

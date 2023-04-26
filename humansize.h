@@ -1,7 +1,7 @@
 /* humansize
  * humn sizing/scaling functions
  *
- * Version 3.0-2
+ * Version 3.0-4
  *
  *
  * Copyright 2023 Ryan Farley <ryan.farley@gmx.com>
@@ -55,13 +55,13 @@ struct humansize_preset {
 	/* factor -- positive for divisor, negative for multiplier */
 	float factor;
 	/* NULL-terminated array of prefix strings, starting with "" */
-	char *pre[];
+	char **pre;
 };
 
 
 SHL_UNUSED static struct humansize_preset humansize_cust = {
 	.factor = 1024,
-	.pre = {
+	.pre = (char *[]){
 		"",
 		"K",
 		"M",
@@ -76,7 +76,7 @@ SHL_UNUSED static struct humansize_preset humansize_cust = {
 };
 SHL_UNUSED static struct humansize_preset humansize_si = {
 	.factor = 1000,
-	.pre = {
+	.pre = (char *[]){
 		"",
 		"k",
 		"M",
@@ -91,7 +91,7 @@ SHL_UNUSED static struct humansize_preset humansize_si = {
 };
 SHL_UNUSED static struct humansize_preset humansize_si_up = {
 	.factor = -1000,
-	.pre = {
+	.pre = (char *[]){
 		"",
 		"m",
 		HUMANSIZE_MU,
@@ -106,7 +106,7 @@ SHL_UNUSED static struct humansize_preset humansize_si_up = {
 };
 SHL_UNUSED static struct humansize_preset humansize_iec = {
 	.factor = 1024,
-	.pre = {
+	.pre = (char *[]){
 		"",
 		"Ki",
 		"Mi",
