@@ -1,7 +1,7 @@
 /* humansize
  * humn sizing/scaling functions
  *
- * Version 4.0-6
+ * Version 4.0-7
  *
  *
  * Copyright 2023 Ryan Farley <ryan.farley@gmx.com>
@@ -63,7 +63,7 @@
 #define HUMANSIZE_MUL_1024 "b"
 #define HUMANSIZE_DIV_1000 "D"
 SHL_UNUSED static char *humansize_cust[] = {
-	HUMANSIZE_MUL_1000
+	HUMANSIZE_MUL_1024,
 	"",
 	"K",
 	"M",
