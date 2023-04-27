@@ -131,6 +131,7 @@ SHL_UNUSED static char *humansize_iec[] = {
 			*res = n;\
 			return 0;\
 	}\
+	++pre;\
 \
 	if (div) {\
 		for (; *pre; ++pre) {\
