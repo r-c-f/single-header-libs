@@ -1,7 +1,7 @@
 /* humansize
  * humn sizing/scaling functions
  *
- * Version 4.0-5
+ * Version 4.0-6
  *
  *
  * Copyright 2023 Ryan Farley <ryan.farley@gmx.com>
@@ -159,7 +159,7 @@ SHL_UNUSED static char *humansize_iec[] = {
 			break;\
 		case 'D':\
 			factor = 1000;\
-			div = 0;\
+			div = 1;\
 			break;\
 		default:\
 			*res_pre = "";\

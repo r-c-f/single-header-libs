@@ -124,7 +124,7 @@ SHL_UNUSED static char *humansize_iec[] = {
 			break;\
 		case 'D':\
 			factor = 1000;\
-			div = 0;\
+			div = 1;\
 			break;\
 		default:\
 			*res_pre = "";\
