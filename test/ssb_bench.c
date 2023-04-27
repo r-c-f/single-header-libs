@@ -8,26 +8,26 @@
 
 static void print_ssb_info(struct ssb *s)
 {
-	long double size, pos;
+	double size, pos;
 	char *size_pre, *pos_pre;
 
 	humansize_scale(s->pos, humansize_iec, &pos, &pos_pre);
 	humansize_scale(s->size, humansize_iec, &size, &size_pre);
 
-	fprintf(stderr, "\t\tposition %Lf%sB, size %Lf%sB\n",
+	fprintf(stderr, "\t\tposition %f%sB, size %f%sB\n",
 			pos, pos_pre, size, size_pre);
 }
 
 static void print_memstream_info(FILE *f, size_t buf_size)
 {
-	long double size, pos;
+	double size, pos;
 	char *size_pre, *pos_pre;
 
 	fflush(f);
 	humansize_scale(ftell(f), humansize_iec, &pos, &pos_pre);
 	fclose(f);
 	humansize_scale(buf_size, humansize_iec, &size, &size_pre);
-	fprintf(stderr, "\t\tposition %Lf%sB, size %Lf%sB\n",
+	fprintf(stderr, "\t\tposition %f%sB, size %f%sB\n",
 			pos, pos_pre, size, size_pre);
 }
 
@@ -181,16 +181,16 @@ static void print_usage(char *name)
 
 static void print_time_diff(struct timeval *start, struct timeval *end)
 {
-	long double d;
-	long double d_scale;
+	double d;
+	double d_scale;
 	char *d_pre;
 
-	d = (long double)end->tv_sec + ((long double)end->tv_usec * 1e-6);
-	d -= (long double)start->tv_sec + ((long double)start->tv_usec * 1e-6);
+	d = (double)end->tv_sec + ((double)end->tv_usec * 1e-6);
+	d -= (double)start->tv_sec + ((double)start->tv_usec * 1e-6);
 
 	humansize_scale_full(d, &d_scale, &d_pre);
 
-	fprintf(stderr, "\t\t\tTIME: %Lf%ss\n", d_scale, d_pre);
+	fprintf(stderr, "\t\t\tTIME: %f%ss\n", d_scale, d_pre);
 }
 
 
