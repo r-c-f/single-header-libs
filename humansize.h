@@ -1,7 +1,7 @@
 /* humansize
  * humn sizing/scaling functions
  *
- * Version 3.0-4
+ * Version 4.0-4
  *
  *
  * Copyright 2023 Ryan Farley <ryan.farley@gmx.com>
@@ -50,74 +50,72 @@
 #endif
 
 
-/* Decimal and binary prefix sets */
-struct humansize_preset {
-	/* factor -- positive for divisor, negative for multiplier */
-	float factor;
-	/* NULL-terminated array of prefix strings, starting with "" */
-	char **pre;
+
+/* prefix sets. The first string is a single character long, as follows:
+ * - d for 1000,
+ * - b for 1024,
+ * - D for 1/1000
+ *
+ * followed by a set of prefixes for increasing/decreasing values, starting
+ * with ""
+*/
+#define HUMANSIZE_MUL_1000 "d"
+#define HUMANSIZE_MUL_1024 "b"
+#define HUMANSIZE_DIV_1000 "D"
+SHL_UNUSED static char *humansize_cust[] = {
+	HUMANSIZE_MUL_1000
+	"",
+	"K",
+	"M",
+	"G",
+	"T",
+	"P",
+	"E",
+	"Z",
+	"Y",
+	NULL
 };
 
+SHL_UNUSED static char *humansize_si[] = {
+	HUMANSIZE_MUL_1000,
+	"",
+	"k",
+	"M",
+	"G",
+	"T",
+	"P",
+	"E",
+	"Z",
+	"Y",
+	NULL
+};
 
-SHL_UNUSED static struct humansize_preset humansize_cust = {
-	.factor = 1024,
-	.pre = (char *[]){
-		"",
-		"K",
-		"M",
-		"G",
-		"T",
-		"P",
-		"E",
-		"Z",
-		"Y",
-		NULL
-	},
+SHL_UNUSED static char *humansize_si_up[] = {
+	HUMANSIZE_DIV_1000,
+	"",
+	"m",
+	HUMANSIZE_MU,
+	"n",
+	"p",
+	"f",
+	"a",
+	"z",
+	"y",
+	NULL,
 };
-SHL_UNUSED static struct humansize_preset humansize_si = {
-	.factor = 1000,
-	.pre = (char *[]){
-		"",
-		"k",
-		"M",
-		"G",
-		"T",
-		"P",
-		"E",
-		"Z",
-		"Y",
-		NULL
-	},
-};
-SHL_UNUSED static struct humansize_preset humansize_si_up = {
-	.factor = -1000,
-	.pre = (char *[]){
-		"",
-		"m",
-		HUMANSIZE_MU,
-		"n",
-		"p",
-		"f",
-		"a",
-		"z",
-		"y",
-		NULL,
-	},
-};
-SHL_UNUSED static struct humansize_preset humansize_iec = {
-	.factor = 1024,
-	.pre = (char *[]){
-		"",
-		"Ki",
-		"Mi",
-		"Gi",
-		"Ti",
-		"Pi",
-		"Ei",
-		"Zi",
-		"Yi",
-		NULL
-	},
+
+SHL_UNUSED static char *humansize_iec[] = {
+	HUMANSIZE_MUL_1024,
+	"",
+	"Ki",
+	"Mi",
+	"Gi",
+	"Ti",
+	"Pi",
+	"Ei",
+	"Zi",
+	"Yi",
+	NULL
 };
 
 /* to avoid -lm */
@@ -147,14 +145,29 @@ SHL_UNUSED static struct humansize_preset humansize_iec = {
  * 	1 if the result could be fully reduced.
  *
 */
-#define HUMANSIZE_SCALE_T(T, name) SHL_UNUSED static int name(T n, struct humansize_preset *preset, T *res, char **res_pre)\
+#define HUMANSIZE_SCALE_T(T, name) SHL_UNUSED static int name(T n, char **pre, T *res, char **res_pre)\
 {\
 	int ret = 1;\
-	char **pre = preset->pre;\
-	T factor = preset->factor;\
+	int div = 0;\
+	T factor; \
+	switch (pre[0][0]) {\
+		case 'd':\
+			factor = 1000;\
+			break;\
+		case 'b':\
+			factor = 1024;\
+			break;\
+		case 'D':\
+			factor = 1000;\
+			div = 0;\
+			break;\
+		default:\
+			*res_pre = "";\
+			*res = n;\
+			return 0;\
+	}\
 \
-	if (factor < 0) {\
-		factor *= -1;\
+	if (div) {\
 		for (; *pre; ++pre) {\
 			if ((n > 1.) || (HUMANSIZE_ABS((n * factor) - factor) < HUMANSIZE_EPSILON)) {\
 				break;\
@@ -189,7 +202,7 @@ HUMANSIZE_SCALE_T(long double, humansize_scalel)
  * same as above, otherwise */
 #define HUMANSIZE_SCALE_T_FULL(T, hsname) SHL_UNUSED static int hsname##_full(T n, T *res, char **res_pre)\
 {\
-	struct humansize_preset *preset = (n < 1.F) ? &humansize_si_up : &humansize_si;\
+	char **preset = (n < 1.F) ? humansize_si_up : humansize_si;\
 	return hsname(n, preset, res, res_pre);\
 }
 HUMANSIZE_SCALE_T_FULL(float, humansize_scalef)

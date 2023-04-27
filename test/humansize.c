@@ -16,16 +16,16 @@ void print_usage(char *name)
 		name, name, name);
 }
 
-struct humansize_preset *preset_from_str(char *str)
+char **preset_from_str(char *str)
 {
 	if (!strcasecmp(str, "cust"))
-		return &humansize_cust;
+		return humansize_cust;
 	if (!strcasecmp(str, "iec"))
-		return &humansize_iec;
+		return humansize_iec;
 	if (!strcasecmp(str, "si"))
-		return &humansize_si;
+		return humansize_si;
 	if (!strcasecmp(str, "si_up"))
-		return &humansize_si_up;
+		return humansize_si_up;
 	fprintf(stderr, "Uknown prefix type %s\n", str);
 	exit(EXIT_FAILURE);
 	/* unreachable */
@@ -37,7 +37,7 @@ int main(int argc, char **argv)
 	int base, ret;
 	long double n, res;
 	char *pre, *s;
-	struct humansize_preset *preset;
+	char **preset;
 
 	if (argc < 3) {
 		print_usage(argv[0]);

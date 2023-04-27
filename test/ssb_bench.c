@@ -11,8 +11,8 @@ static void print_ssb_info(struct ssb *s)
 	long double size, pos;
 	char *size_pre, *pos_pre;
 
-	humansize_scale(s->pos, &humansize_iec, &pos, &pos_pre);
-	humansize_scale(s->size, &humansize_iec, &size, &size_pre);
+	humansize_scale(s->pos, humansize_iec, &pos, &pos_pre);
+	humansize_scale(s->size, humansize_iec, &size, &size_pre);
 
 	fprintf(stderr, "\t\tposition %Lf%sB, size %Lf%sB\n",
 			pos, pos_pre, size, size_pre);
@@ -24,9 +24,9 @@ static void print_memstream_info(FILE *f, size_t buf_size)
 	char *size_pre, *pos_pre;
 
 	fflush(f);
-	humansize_scale(ftell(f), &humansize_iec, &pos, &pos_pre);
+	humansize_scale(ftell(f), humansize_iec, &pos, &pos_pre);
 	fclose(f);
-	humansize_scale(buf_size, &humansize_iec, &size, &size_pre);
+	humansize_scale(buf_size, humansize_iec, &size, &size_pre);
 	fprintf(stderr, "\t\tposition %Lf%sB, size %Lf%sB\n",
 			pos, pos_pre, size, size_pre);
 }

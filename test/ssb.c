@@ -8,8 +8,8 @@ static void print_ssb_info(struct ssb *s)
 	double size, pos;
 	char *size_pre, *pos_pre;
 
-	humansize_scale(s->pos, &humansize_iec, &pos, &pos_pre);
-	humansize_scale(s->size, &humansize_iec, &size, &size_pre);
+	humansize_scale(s->pos, humansize_iec, &pos, &pos_pre);
+	humansize_scale(s->size, humansize_iec, &size, &size_pre);
 
 	fprintf(stderr, "\t\tgrow strategy %d: position %f%sB, size %f%sB\n", s->grow,
 			pos, pos_pre, size, size_pre);
