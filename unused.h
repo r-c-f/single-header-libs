@@ -1,7 +1,7 @@
 /* unused
  * Pick the right attribute to silence unused function/variable errors
  *
- * Version 1.0-1
+ * Version 1.0-2
  *
  *
  * Copyright 2023 Ryan Farley <ryan.farley@gmx.com>
@@ -24,7 +24,7 @@
 
 #if !defined(UNUSED) /* because someone might have their own */
 	#if (defined(__cplusplus) && (__cplusplus >= 201703L)) ||\
-    	(defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 202311L))
+	(defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 202311L))
 		#define UNUSED [[maybe_unused]]
 	#elif defined(__GNUC__)
 		#define UNUSED __attribute__((unused))

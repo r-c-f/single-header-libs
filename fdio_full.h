@@ -24,7 +24,7 @@
 
 #if !defined(SHL_UNUSED) /* because someone might have their own */
 	#if (defined(__cplusplus) && (__cplusplus >= 201703L)) ||\
-    	(defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 202311L))
+	(defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 202311L))
 		#define SHL_UNUSED [[maybe_unused]]
 	#elif defined(__GNUC__)
 		#define SHL_UNUSED __attribute__((unused))
